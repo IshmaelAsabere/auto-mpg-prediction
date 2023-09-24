@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "auto-mpg-prediction"
+  site-url: "https://IshmaelAsabere.github.io/auto-mpg-prediction"
+  description: "Auto MPG dataset for Machine Learning and Neural Network Project"
+  repo-branch: main
+  repo-url: "https://github.com/IshmaelAsabere/auto-mpg-prediction"
