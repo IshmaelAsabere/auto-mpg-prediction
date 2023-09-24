@@ -1,0 +1,79 @@
+[
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "",
+    "text": "# Import relevant dependencies for the machine learning project\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import Dense, Activation\nfrom sklearn.model_selection import train_test_split\nfrom tensorflow.keras.callbacks import EarlyStopping\nimport pandas as pd\nimport io\nimport os\nimport requests\nimport numpy as np\nfrom sklearn import metrics\n\n\n# Load data\ndf = pd.read_csv(r'data/auto-mpg.csv', na_values=['NA','?'])\n\n\ndf.shape\n\n(398, 9)\n\n\n\n# Check missing values - need to deal with missing values in horsepower\ndf.isnull().sum()\n\nmpg             0\ncylinders       0\ndisplacement    0\nhorsepower      6\nweight          0\nacceleration    0\nyear            0\norigin          0\nname            0\ndtype: int64\n\n\n\n# Deal with the missing values by filling them in with the median value\ndf['horsepower'] = df['horsepower'].fillna(df['horsepower'].median())\n\n\n# Check the missing values again\ndf.isnull().sum()\n\nmpg             0\ncylinders       0\ndisplacement    0\nhorsepower      0\nweight          0\nacceleration    0\nyear            0\norigin          0\nname            0\ndtype: int64"
+  },
+  {
+    "objectID": "core.html#load-auto-data-and-relevant-libraries",
+    "href": "core.html#load-auto-data-and-relevant-libraries",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "",
+    "text": "# Import relevant dependencies for the machine learning project\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import Dense, Activation\nfrom sklearn.model_selection import train_test_split\nfrom tensorflow.keras.callbacks import EarlyStopping\nimport pandas as pd\nimport io\nimport os\nimport requests\nimport numpy as np\nfrom sklearn import metrics\n\n\n# Load data\ndf = pd.read_csv(r'data/auto-mpg.csv', na_values=['NA','?'])\n\n\ndf.shape\n\n(398, 9)\n\n\n\n# Check missing values - need to deal with missing values in horsepower\ndf.isnull().sum()\n\nmpg             0\ncylinders       0\ndisplacement    0\nhorsepower      6\nweight          0\nacceleration    0\nyear            0\norigin          0\nname            0\ndtype: int64\n\n\n\n# Deal with the missing values by filling them in with the median value\ndf['horsepower'] = df['horsepower'].fillna(df['horsepower'].median())\n\n\n# Check the missing values again\ndf.isnull().sum()\n\nmpg             0\ncylinders       0\ndisplacement    0\nhorsepower      0\nweight          0\nacceleration    0\nyear            0\norigin          0\nname            0\ndtype: int64"
+  },
+  {
+    "objectID": "core.html#define-our-target-and-features",
+    "href": "core.html#define-our-target-and-features",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "Define our target and features",
+    "text": "Define our target and features\n\nx = df[['cylinders', 'displacement', 'horsepower','weight','acceleration','year','origin']].values\ny = df['mpg'].values\n\n\ntype(y)\n\nnumpy.ndarray"
+  },
+  {
+    "objectID": "core.html#split-data-into-train-and-test-values",
+    "href": "core.html#split-data-into-train-and-test-values",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "Split data into train and test values",
+    "text": "Split data into train and test values\n\nx_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)\n\n\nx_train.shape\n\n(298, 7)"
+  },
+  {
+    "objectID": "core.html#train-the-neural-network-on-the-train-data",
+    "href": "core.html#train-the-neural-network-on-the-train-data",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "Train the Neural Network on the train data",
+    "text": "Train the Neural Network on the train data\n\nmodel = Sequential()\nmodel.add(Dense(25, input_dim=x.shape[1], activation='relu'))\nmodel.add(Dense(10, activation='relu'))\nmodel.add(Dense(1))\nmodel.compile(loss='mean_squared_error', optimizer='adam')\n\nmonitor = EarlyStopping(monitor='val_loss', min_delta=1e-3, patience=5, verbose=1, mode='auto', restore_best_weights=True)\n\nmodel.fit(x_train, y_train, validation_data=(x_test, y_test), callbacks=[monitor], verbose=2, epochs=1000)\n\nEpoch 1/1000\n10/10 - 6s - loss: 289.0994 - val_loss: 139.6767 - 6s/epoch - 628ms/step\nEpoch 2/1000\n10/10 - 0s - loss: 131.3682 - val_loss: 81.3089 - 222ms/epoch - 22ms/step\nEpoch 3/1000\n10/10 - 0s - loss: 91.6769 - val_loss: 79.7147 - 245ms/epoch - 24ms/step\nEpoch 4/1000\n10/10 - 0s - loss: 79.3116 - val_loss: 57.2720 - 211ms/epoch - 21ms/step\nEpoch 5/1000\n10/10 - 0s - loss: 64.5642 - val_loss: 47.6098 - 209ms/epoch - 21ms/step\nEpoch 6/1000\n10/10 - 0s - loss: 55.7570 - val_loss: 41.4851 - 211ms/epoch - 21ms/step\nEpoch 7/1000\n10/10 - 0s - loss: 48.7589 - val_loss: 33.7690 - 220ms/epoch - 22ms/step\nEpoch 8/1000\n10/10 - 0s - loss: 42.4368 - val_loss: 29.9907 - 295ms/epoch - 29ms/step\nEpoch 9/1000\n10/10 - 0s - loss: 38.4295 - val_loss: 25.9246 - 239ms/epoch - 24ms/step\nEpoch 10/1000\n10/10 - 0s - loss: 33.1909 - val_loss: 21.2726 - 211ms/epoch - 21ms/step\nEpoch 11/1000\n10/10 - 0s - loss: 30.5271 - val_loss: 20.2363 - 208ms/epoch - 21ms/step\nEpoch 12/1000\n10/10 - 0s - loss: 27.5326 - val_loss: 20.0861 - 241ms/epoch - 24ms/step\nEpoch 13/1000\n10/10 - 0s - loss: 26.1349 - val_loss: 15.7806 - 205ms/epoch - 20ms/step\nEpoch 14/1000\n10/10 - 0s - loss: 23.7464 - val_loss: 17.1423 - 204ms/epoch - 20ms/step\nEpoch 15/1000\n10/10 - 0s - loss: 21.5719 - val_loss: 14.4273 - 211ms/epoch - 21ms/step\nEpoch 16/1000\n10/10 - 0s - loss: 21.2971 - val_loss: 14.2234 - 243ms/epoch - 24ms/step\nEpoch 17/1000\n10/10 - 0s - loss: 23.0369 - val_loss: 20.1913 - 194ms/epoch - 19ms/step\nEpoch 18/1000\n10/10 - 0s - loss: 21.1706 - val_loss: 14.3832 - 226ms/epoch - 23ms/step\nEpoch 19/1000\n10/10 - 0s - loss: 22.3248 - val_loss: 16.3808 - 248ms/epoch - 25ms/step\nEpoch 20/1000\n10/10 - 0s - loss: 20.0976 - val_loss: 13.5110 - 266ms/epoch - 27ms/step\nEpoch 21/1000\n10/10 - 0s - loss: 21.5558 - val_loss: 16.4650 - 206ms/epoch - 21ms/step\nEpoch 22/1000\n10/10 - 0s - loss: 21.0357 - val_loss: 17.2175 - 221ms/epoch - 22ms/step\nEpoch 23/1000\n10/10 - 0s - loss: 18.7643 - val_loss: 13.8731 - 205ms/epoch - 20ms/step\nEpoch 24/1000\n10/10 - 0s - loss: 19.1444 - val_loss: 14.3125 - 209ms/epoch - 21ms/step\nEpoch 25/1000\nRestoring model weights from the end of the best epoch: 20.\n10/10 - 0s - loss: 17.7829 - val_loss: 20.6642 - 245ms/epoch - 25ms/step\nEpoch 25: early stopping\n\n\n&lt;keras.src.callbacks.History&gt;"
+  },
+  {
+    "objectID": "core.html#predicting-on-our-test-data",
+    "href": "core.html#predicting-on-our-test-data",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "Predicting on our test data",
+    "text": "Predicting on our test data\n\n# Predicting on the test data\nprediction = model.predict(x_test)\nscore = np.sqrt(metrics.mean_squared_error(prediction, y_test))\nprint(f'After the training the score is: {score}')\n\n4/4 [==============================] - 1s 7ms/step\nAfter the training the score is: 3.6757342926737295"
+  },
+  {
+    "objectID": "core.html#save-the-model",
+    "href": "core.html#save-the-model",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "Save the model",
+    "text": "Save the model\n\n# Check working directory\nos.getcwd()\n\n'C:\\\\Users\\\\ishma\\\\Dev_Workspace\\\\auto-mpg-prediction\\\\nbs'\n\n\n\n# Save the model as an h5 file\nmodel.save(os.path.join(os.getcwd(),\"mpg_model.h5\"))\nmodel.save(os.path.join(os.getcwd(),\"mpg_model.keras\"))"
+  },
+  {
+    "objectID": "core.html#preview-the-boundaries-in-the-dataframe",
+    "href": "core.html#preview-the-boundaries-in-the-dataframe",
+    "title": "Predicting fuel efficiency with Machine Learning",
+    "section": "Preview the boundaries in the dataframe",
+    "text": "Preview the boundaries in the dataframe\n\n# Get column names\ncols = [x for x in df.columns if x not in ('mpg', 'name')]\ncols\n\n['cylinders',\n 'displacement',\n 'horsepower',\n 'weight',\n 'acceleration',\n 'year',\n 'origin']\n\n\n\n# Extract min and max values\nprint(\"{\")\nfor i,name in enumerate(cols):\n    print(f'\"{name}\":{{\"min\":{df[name].min()},\"max\":{df[name].max()}}}{\",\" if i&lt;(len(cols)-1) else \"\"}')\nprint(\"}\")\n\n{\n\"cylinders\":{\"min\":3,\"max\":8},\n\"displacement\":{\"min\":68.0,\"max\":455.0},\n\"horsepower\":{\"min\":46.0,\"max\":230.0},\n\"weight\":{\"min\":1613,\"max\":5140},\n\"acceleration\":{\"min\":8.0,\"max\":24.8},\n\"year\":{\"min\":70,\"max\":82},\n\"origin\":{\"min\":1,\"max\":3}\n}"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "auto-mpg-prediction",
+    "section": "",
+    "text": "This file will become your README and also the index of your documentation."
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "auto-mpg-prediction",
+    "section": "Install",
+    "text": "Install\npip install auto_mpg_prediction"
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "auto-mpg-prediction",
+    "section": "How to use",
+    "text": "How to use\nFill me in please! Don’t forget code examples:\n\n1+1\n\n2"
+  }
+]
